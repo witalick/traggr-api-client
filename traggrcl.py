@@ -14,17 +14,22 @@ REQUIRED_RESULT_KEYS = ('component', 'suite', 'test_id')
 
 class TRAggrAPIClient(object):
 
-    def __init__(self, host, port, context=None):
+    def __init__(self, url):
 
-        self.scheme = 'http'
-        self.host = host
-        self.port = port
-        self.context = context or '/'
+        self.base_url = url
 
     def _compile_url(self, path):
 
-        url_path = os.path.join(self.context, path.lstrip('/'))
-        return '%s://%s:%s%s' % (self.scheme, self.host, self.port, url_path)
+        return '%s/%s' % (self.base_url.rstrip('/'), path.lstrip('/'))
+
+    def ping(self):
+
+        path = '/ping'
+        url = self._compile_url(path)
+        response = requests.get(url)
+
+        if response.status_code != 200:
+            raise Exception('API does not respond.')
 
     def post_results(self, project,
                            sprint,
@@ -42,26 +47,22 @@ class TRAggrAPIClient(object):
         path = '/results/%s/%s' % (project, sprint)
         url = self._compile_url(path)
 
-        import pdb; pdb.set_trace()
-
         response = requests.post(url, data=json.dumps(results), headers=headers)
 
-        # TODO: Validate response.
-        # print response
-        return response
+        if response.status_code != 200:
+            raise Exception('Failed to post results. Code: %s. Text: %s' %
+                            (response.status_code, response.text))
 
 
 if __name__ == '__main__':
 
-    host = 'localhost'
-    port = 5001
+    url = 'http://localhost:5001'
 
     project = 'proj'
     sprint = '2014-04'
 
-    client = TRAggrAPIClient(host=host,
-                             port=port,
-                             context='/')
+    client = TRAggrAPIClient(url=url)
+    client.ping()
 
     results = [{'component': 'API',
                 'suite': 'Functions',

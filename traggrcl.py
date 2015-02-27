@@ -52,7 +52,7 @@ class TRAggrAPIClient(object):
 
         # Validate results.
         for test in tests:
-            for required_key in REQUIRED_RESULT_KEYS:
+            for required_key in ('component', 'suite'):
                 if required_key not in test:
                     raise Exception('Result record %s does not contain a required key "%s"' % (test, required_key))
         # TODO: More validation.
@@ -103,6 +103,13 @@ if __name__ == '__main__':
                                      'types': ['Functional']},
                 'result_attributes': {'result': 'passed',
                                       'error': 'Exception'}}]
+
+    test = [{'component': 'API',
+            'suite': 'Functions',
+            'other_attributes': {'title': 'Test for login',
+                                 'steps': 'Some more description',
+                                 'expected_results': 'Some expected results'}
+    }]
 
     client.post_results(project=project,
                         sprint=sprint,

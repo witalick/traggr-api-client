@@ -49,18 +49,17 @@ class TRAggrAPIClient(object):
 
     def post_manual_test(self, project, tests):
         headers = {'Content-Type': 'text/json'}
-
+        project = 'manual_' + project
         # Validate results.
         for test in tests:
             for required_key in ('component', 'suite'):
                 if required_key not in test:
                     raise Exception('Result record %s does not contain a required key "%s"' % (test, required_key))
-        # TODO: More validation.
 
         path = '/manual/%s' % project
         url = self._compile_url(path)
 
-        response = requests.post(url, data=json.dumps(results), headers=headers)
+        response = requests.post(url, data=json.dumps(tests), headers=headers)
 
         if response.status_code != 200:
             raise Exception('Failed to post results. Code: %s. Text: %s' %
@@ -89,7 +88,7 @@ if __name__ == '__main__':
 
     url = 'http://localhost:5001'
 
-    project = 'proj'
+    project = 'CTL'
     sprint = '2014-04'
 
     client = TRAggrAPIClient(url=url)
@@ -104,16 +103,14 @@ if __name__ == '__main__':
                 'result_attributes': {'result': 'passed',
                                       'error': 'Exception'}}]
 
-    test = [{'component': 'API',
-            'suite': 'Functions',
+    test = [{'component': 'KOLO',
+            'suite': 'KOLO SUITE',
             'other_attributes': {'title': 'Test for login',
                                  'steps': 'Some more description',
                                  'expected_results': 'Some expected results'}
     }]
 
-    client.post_results(project=project,
-                        sprint=sprint,
-                        results=results)
+    client.post_manual_test(project=project, tests=test)
 
 
 # EOF

@@ -49,7 +49,6 @@ class TRAggrAPIClient(object):
 
     def post_manual_test(self, project, tests):
         headers = {'Content-Type': 'text/json'}
-        project = 'manual_' + project
         # Validate results.
         for test in tests:
             for required_key in ('component', 'suite'):
@@ -103,7 +102,7 @@ if __name__ == '__main__':
                 'result_attributes': {'result': 'passed',
                                       'error': 'Exception'}}]
 
-    test = [{'component': 'KOLO',
+    test = [{'component': 'KOLO2',
             'suite': 'KOLO SUITE',
             'other_attributes': {'title': 'Test for login',
                                  'steps': 'Some more description',
